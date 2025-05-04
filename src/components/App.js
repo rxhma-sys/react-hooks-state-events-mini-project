@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import CategoryFilter from "./components/CategoryFilter";
-import NewTaskForm from "./components/NewTaskForm";
-import TaskList from "./components/TaskList";
-
-import { CATEGORIES, TASKS } from "./data";
+import CategoryFilter from "./CategoryFilter";
+import NewTaskForm from "./NewTaskForm";
+import TaskList from "./TaskList";
+import { TASKS as initialTasks, CATEGORIES } from "../data";
 
 function App() {
-  const [tasks, setTasks] = useState(TASKS);
+  const [tasks, setTasks] = useState(initialTasks);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const handleDeleteTask = (taskId) => {
@@ -17,8 +16,8 @@ function App() {
     setTasks([...tasks, { ...newTask, id: tasks.length + 1 }]);
   };
 
-  const filteredTasks = selectedCategory === "All" 
-    ? tasks 
+  const filteredTasks = selectedCategory === "All"
+    ? tasks
     : tasks.filter((task) => task.category === selectedCategory);
 
   return (
@@ -30,7 +29,7 @@ function App() {
         onSelectCategory={setSelectedCategory}
       />
       <NewTaskForm
-        categories={CATEGORIES.filter((cat) => cat !== "All")}
+        categories={CATEGORIES.filter(cat => cat !== "All")}
         onTaskFormSubmit={handleAddTask}
       />
       <TaskList tasks={filteredTasks} onDeleteTask={handleDeleteTask} />

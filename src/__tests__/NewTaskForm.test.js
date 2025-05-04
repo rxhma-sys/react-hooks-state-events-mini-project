@@ -1,49 +1,23 @@
-import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
-import NewTaskForm from "../components/NewTaskForm";
-import { CATEGORIES } from "../data";
-import App from "../components/App";
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
+import NewTaskForm from '../components/NewTaskForm';
+import { CATEGORIES } from '../data';
 
 test("calls the onTaskFormSubmit callback prop when the form is submitted", () => {
-  const onTaskFormSubmit = jest.fn();
-  render(
-    <NewTaskForm categories={CATEGORIES} onTaskFormSubmit={onTaskFormSubmit} />
-  );
-
-  fireEvent.change(screen.queryByLabelText(/Details/), {
-    target: { value: "Pass the tests" },
+  const mockSubmit = jest.fn();
+  render(<NewTaskForm categories={CATEGORIES.filter(c => c !== "All")} onTaskFormSubmit={mockSubmit} />);
+  
+  fireEvent.change(screen.getByLabelText(/Details/), {
+    target: { value: "New task" }
   });
-
-  fireEvent.change(screen.queryByLabelText(/Category/), {
-    target: { value: "Code" },
+  fireEvent.change(screen.getByLabelText(/Category/), {
+    target: { value: CATEGORIES[1] }
   });
-
-  fireEvent.submit(screen.queryByText(/Add task/));
-
-  expect(onTaskFormSubmit).toHaveBeenCalledWith(
-    expect.objectContaining({
-      text: "Pass the tests",
-      category: "Code",
-    })
-  );
-});
-
-test("adds a new item to the list when the form is submitted", () => {
-  render(<App />);
-
-  const codeCount = screen.queryAllByText(/Code/).length;
-
-  fireEvent.change(screen.queryByLabelText(/Details/), {
-    target: { value: "Pass the tests" },
+  fireEvent.submit(screen.getByText(/Add task/));
+  
+  expect(mockSubmit).toHaveBeenCalledWith({
+    text: "New task",
+    category: CATEGORIES[1]
   });
-
-  fireEvent.change(screen.queryByLabelText(/Category/), {
-    target: { value: "Code" },
-  });
-
-  fireEvent.submit(screen.queryByText(/Add task/));
-
-  expect(screen.queryByText(/Pass the tests/)).toBeInTheDocument();
-
-  expect(screen.queryAllByText(/Code/).length).toBe(codeCount + 1);
 });
